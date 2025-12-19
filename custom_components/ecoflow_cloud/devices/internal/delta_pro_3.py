@@ -1,9 +1,12 @@
+from custom_components.ecoflow_cloud.sensor import MilliampSensorEntity
 import logging
 from typing import Any, override
 
 from custom_components.ecoflow_cloud.api import EcoflowApiClient
 from custom_components.ecoflow_cloud.devices import BaseDevice, const
-from custom_components.ecoflow_cloud.devices.internal.proto import ef_dp3_iobroker_pb2 as pb2
+from custom_components.ecoflow_cloud.devices.internal.proto import (
+    ef_dp3_iobroker_pb2 as dp3,
+)
 from custom_components.ecoflow_cloud.entities import (
     BaseNumberEntity,
     BaseSelectEntity,
@@ -22,14 +25,12 @@ from custom_components.ecoflow_cloud.sensor import (
     AmpSensorEntity,
     CapacitySensorEntity,
     CyclesSensorEntity,
-    InMilliampSolarSensorEntity,
     InEnergySensorEntity,
-    InMilliVoltSensorEntity,
+    InMilliampSolarSensorEntity,
     InVoltSolarSensorEntity,
     InWattsSensorEntity,
     InWattsSolarSensorEntity,
     LevelSensorEntity,
-    MilliVoltSensorEntity,
     OutEnergySensorEntity,
     OutVoltDcSensorEntity,
     OutWattsDcSensorEntity,
@@ -37,6 +38,7 @@ from custom_components.ecoflow_cloud.sensor import (
     QuotaStatusSensorEntity,
     RemainSensorEntity,
     TempSensorEntity,
+    VoltSensorEntity,
 )
 from custom_components.ecoflow_cloud.switch import BeeperEntity, EnabledEntity
 
@@ -79,11 +81,11 @@ class DeltaPro3(BaseDevice):
             LevelSensorEntity(client, self, "bms_batt_soh", const.SOH),
             # Cycles from BMSHeartBeatReport (not DisplayPropertyUpload)
             CyclesSensorEntity(client, self, "cycles", const.CYCLES),
-            MilliVoltSensorEntity(client, self, "bms_batt_vol", const.BATTERY_VOLT, False)
+            VoltSensorEntity(client, self, "bms_batt_vol", const.BATTERY_VOLT, False)
             .attr("bms_min_cell_vol", const.ATTR_MIN_CELL_VOLT, 0)
             .attr("bms_max_cell_vol", const.ATTR_MAX_CELL_VOLT, 0),
-            MilliVoltSensorEntity(client, self, "bms_min_cell_vol", const.MIN_CELL_VOLT, False),
-            MilliVoltSensorEntity(client, self, "bms_max_cell_vol", const.MAX_CELL_VOLT, False),
+            VoltSensorEntity(client, self, "bms_min_cell_vol", const.MIN_CELL_VOLT, False),
+            VoltSensorEntity(client, self, "bms_max_cell_vol", const.MAX_CELL_VOLT, False),
             AmpSensorEntity(client, self, "bms_batt_amp", const.MAIN_BATTERY_CURRENT, False),
             TempSensorEntity(client, self, "bms_max_cell_temp", const.MAX_CELL_TEMP, False),
             TempSensorEntity(client, self, "bms_min_cell_temp", const.MIN_CELL_TEMP, False),
@@ -99,8 +101,8 @@ class DeltaPro3(BaseDevice):
             OutWattsSensorEntity(client, self, "pow_get_ac", const.AC_OUT_POWER),
             OutWattsSensorEntity(client, self, "pow_get_ac_hv_out", "AC HV Output Power"),
             OutWattsSensorEntity(client, self, "pow_get_ac_lv_out", "AC LV Output Power"),
-            InMilliVoltSensorEntity(client, self, "plug_in_info_ac_in_vol", const.AC_IN_VOLT),
-            InMilliampSolarSensorEntity(client, self, "plug_in_info_ac_in_amp", "AC Input Current"),
+            VoltSensorEntity(client, self, "plug_in_info_ac_in_vol", const.AC_IN_VOLT),
+            InMilliampSolarSensorEntity(client, self, "plug_in_info_ac_in_amp", const.AC_IN_CURRENT),
             OutWattsDcSensorEntity(client, self, "pow_get_12v", "12V DC Output Power"),
             OutWattsDcSensorEntity(client, self, "pow_get_24v", "24V DC Output Power"),
             OutVoltDcSensorEntity(client, self, "pow_get_12v_vol", "12V DC Output Voltage"),
@@ -406,11 +408,11 @@ class DeltaPro3(BaseDevice):
 
             # Try to decode as HeaderMessage
             try:
-                header_msg = pb2.HeaderMessage()
+                header_msg = dp3.DP3HeaderMessage()
                 header_msg.ParseFromString(raw_data)
             except AttributeError as e:
                 _LOGGER.error(f"HeaderMessage class not found in pb2 module: {e}")
-                _LOGGER.debug(f"Available classes in pb2: {[attr for attr in dir(pb2) if not attr.startswith('_')]}")
+                _LOGGER.debug(f"Available classes in pb2: {[attr for attr in dir(dp3) if not attr.startswith('_')]}")
                 return None
             except Exception as e:
                 _LOGGER.error(f"Failed to parse HeaderMessage: {e}")
@@ -495,20 +497,20 @@ class DeltaPro3(BaseDevice):
 
             if cmd_func == 254 and cmd_id == 21:
                 # DisplayPropertyUpload
-                msg = pb2.DisplayPropertyUpload()
+                msg = dp3.DP3DisplayPropertyUpload()
                 msg.ParseFromString(pdata)
                 return self._protobuf_to_dict(msg)
 
             elif cmd_func == 32 and cmd_id == 2:
                 # cmdFunc32_cmdId2_Report (CMSHeartBeatReport)
-                msg = pb2.cmdFunc32_cmdId2_Report()
+                msg = dp3.DP3CMSHeartBeatReport()
                 msg.ParseFromString(pdata)
                 return self._protobuf_to_dict(msg)
 
             elif cmd_func == 254 and cmd_id == 22:
                 # RuntimePropertyUpload - frequently updated runtime properties
                 try:
-                    msg = pb2.RuntimePropertyUpload()
+                    msg = dp3.DP3RuntimePropertyUpload()
                     msg.ParseFromString(pdata)
                     return self._protobuf_to_dict(msg)
                 except AttributeError:
@@ -527,12 +529,16 @@ class DeltaPro3(BaseDevice):
                             }
                     except Exception:
                         pass
-                    return {"cmdFunc": cmd_func, "cmdId": cmd_id, "raw_data_length": len(pdata)}
+                    return {
+                        "cmdFunc": cmd_func,
+                        "cmdId": cmd_id,
+                        "raw_data_length": len(pdata),
+                    }
 
             elif cmd_func == 254 and cmd_id == 23:
                 # cmdFunc254_cmdId23_Report - report with timestamp
                 try:
-                    msg = pb2.cmdFunc254_cmdId23_Report()
+                    msg = dp3.DP3DisplayPropertyReport()
                     msg.ParseFromString(pdata)
                     return self._protobuf_to_dict(msg)
                 except AttributeError:
@@ -551,7 +557,11 @@ class DeltaPro3(BaseDevice):
                             }
                     except Exception:
                         pass
-                    return {"cmdFunc": cmd_func, "cmdId": cmd_id, "raw_data_length": len(pdata)}
+                    return {
+                        "cmdFunc": cmd_func,
+                        "cmdId": cmd_id,
+                        "raw_data_length": len(pdata),
+                    }
 
             # BMSHeartBeatReport - Battery heartbeat with cycles and energy data
             # Verified from ioBroker implementation: cmdFunc=32, cmdId=50
@@ -559,7 +569,7 @@ class DeltaPro3(BaseDevice):
             elif self._is_bms_heartbeat(cmd_func, cmd_id):
                 # BMSHeartBeatReport - contains cycles, input_watts, output_watts, accu_chg_energy, accu_dsg_energy
                 try:
-                    msg = pb2.BMSHeartBeatReport()
+                    msg = dp3.DP3BMSHeartBeatReport()
                     msg.ParseFromString(pdata)
                     _LOGGER.info(f"Successfully decoded BMSHeartBeatReport: cmdFunc={cmd_func}, cmdId={cmd_id}")
                     return self._protobuf_to_dict(msg)
@@ -572,7 +582,7 @@ class DeltaPro3(BaseDevice):
 
             # Try to decode as BMSHeartBeatReport since that's a common case
             try:
-                msg = pb2.BMSHeartBeatReport()
+                msg = dp3.DP3BMSHeartBeatReport()
                 msg.ParseFromString(pdata)
                 result = self._protobuf_to_dict(msg)
                 # Check if we got meaningful data (cycles or energy fields)

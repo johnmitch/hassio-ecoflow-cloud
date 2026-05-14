@@ -26,9 +26,11 @@ class EcoflowMqttInfo:
 
 class EcoflowApiClient(ABC):
     def __init__(self):
+        from custom_components.ecoflow_cloud.api.ecoflow_mqtt import EcoflowMQTTClient
+
         self.mqtt_info: EcoflowMqttInfo
         self.devices: dict[str, Any] = {}
-        self.mqtt_client = None
+        self.mqtt_client: EcoflowMQTTClient
 
     @abstractmethod
     async def login(self):
@@ -43,8 +45,38 @@ class EcoflowApiClient(ABC):
         pass
 
     @abstractmethod
-    def configure_device(self, device_data: DeviceData):
+    def _create_device_info(
+        self, device_sn: str, device_name: str, device_type: str, status: int = -1
+    ) -> Any:
         pass
+
+    @abstractmethod
+    def _device_registry(self) -> dict[str, Any]:
+        pass
+
+    def configure_device(self, device_data: DeviceData, api_devices_info: dict[str, Any] | None = None):
+        sn = device_data.parent.sn if device_data.parent is not None else device_data.sn
+        status = -1
+        if api_devices_info and sn in api_devices_info:
+            status = api_devices_info[sn].status
+
+        if device_data.parent is not None:
+            info = self._create_device_info(device_data.parent.sn, device_data.name, device_data.parent.device_type, status)
+        else:
+            info = self._create_device_info(device_data.sn, device_data.name, device_data.device_type, status)
+
+        from ..devices import DiagnosticDevice
+
+        registry = self._device_registry()
+        if device_data.device_type in registry:
+            device = registry[device_data.device_type](info, device_data)
+        elif device_data.parent is not None and device_data.parent.device_type in registry:
+            device = registry[device_data.parent.device_type](info, device_data)
+        else:
+            device = DiagnosticDevice(info, device_data)
+
+        self.add_device(device)
+        return device
 
     def add_device(self, device):
         self.devices[device.device_data.sn] = device
@@ -59,15 +91,13 @@ class EcoflowApiClient(ABC):
             mqtt_port = int(resp_json["data"]["port"])
             mqtt_username = resp_json["data"]["certificateAccount"]
             mqtt_password = resp_json["data"]["certificatePassword"]
-            self.mqtt_info = EcoflowMqttInfo(
-                mqtt_url, mqtt_port, mqtt_username, mqtt_password
-            )
+            self.mqtt_info = EcoflowMqttInfo(mqtt_url, mqtt_port, mqtt_username, mqtt_password)
         except KeyError as key:
             raise EcoflowException(f"Failed to extract key {key} from {resp_json}")
 
         _LOGGER.info(f"Successfully extracted account: {self.mqtt_info.username}")
 
-    async def _get_json_response(self, resp: ClientResponse):
+    async def _get_json_response(self, resp: ClientResponse) -> dict[str, Any]:
         if resp.status != 200:
             raise EcoflowException(f"Got HTTP status code {resp.status}: {resp.reason}")
 
@@ -77,9 +107,7 @@ class EcoflowApiClient(ABC):
         except KeyError as key:
             raise EcoflowException(f"Failed to extract key {key} from {resp}")
         except Exception as error:
-            raise EcoflowException(
-                f"Failed to parse response: {resp.text} Error: {error}"
-            )
+            raise EcoflowException(f"Failed to parse response: {resp.text} Error: {error}")
 
         if response_message.lower() != "success":
             raise EcoflowException(f"{response_message}")
@@ -90,26 +118,22 @@ class EcoflowApiClient(ABC):
         if isinstance(command, dict):
             command = JSONMessage(command)
 
-        self.mqtt_client.publish(
-            self.devices[device_sn].device_info.get_topic, command.to_mqtt_payload()
-        )
+        self.mqtt_client.publish(self.devices[device_sn].device_info.get_topic, command.to_mqtt_payload())
 
-    def send_set_message(
-        self, device_sn: str, mqtt_state: dict[str, Any], command: dict | Message
-    ):
+    def send_set_message(self, device_sn: str, mqtt_state: dict[str, Any], command: dict | Message):
         if isinstance(command, dict):
             command = JSONMessage(command)
 
         self.devices[device_sn].data.update_to_target_state(mqtt_state)
-        self.mqtt_client.publish(
-            self.devices[device_sn].device_info.set_topic, command.to_mqtt_payload()
-        )
+        self.mqtt_client.publish(self.devices[device_sn].device_info.set_topic, command.to_mqtt_payload())
 
     def start(self):
+        _LOGGER.debug("Starting MQTT client for %s", self.mqtt_info.client_id)
         from custom_components.ecoflow_cloud.api.ecoflow_mqtt import EcoflowMQTTClient
 
         self.mqtt_client = EcoflowMQTTClient(self.mqtt_info, self.devices)
 
     def stop(self):
+        _LOGGER.debug("Stopping MQTT client for %s", self.mqtt_info.client_id)
         assert self.mqtt_client is not None
         self.mqtt_client.stop()

@@ -10,10 +10,28 @@ Inspired by [hassio-ecoflow](https://github.com/vwt12eh8/hassio-ecoflow) and [ec
 
 ## Installation
 
-- Install as a custom repository via HACS
+### HACS installation
+The quickest way to install this integration is via [HACS](https://github.com/hacs/integration) by clicking the button below:
+
+[![Add to HACS via My Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tolwi&repository=hassio-ecoflow-cloud&category=Integration)
+
+1. Click above to install as a custom repository via HACS
+2. Restart Home Assistant
+3. Once restart is done, use `Add Integration` → `EcoflowCloud`.
+
+### 🌍 Regional API Hosts (Important for European Users)
+EcoFlow strictly separates accounts by region. If you encounter the error `Account doesn't exist or incorrect password` during the integration setup, verify your `api_host` setting:
+- **Global / US:** `api.ecoflow.com` (Default)
+- **Europe:** `api-e.ecoflow.com`
+
+### Manual installation options
+- Install as a [custom repository](https://github.com/tolwi/hassio-ecoflow-cloud) via [HACS](https://github.com/hacs/integration)
 - Manually download and extract to the custom_components directory
 
-Once installed, use Add Integration -> Ecoflow Cloud.
+Restart Home Assistant. Once restart is done, use `Add Integration` → `EcoflowCloud`.
+
+## Device Management
+For information on how to add, remove, and configure devices, please refer to the [Device Management Documentation](docs/device_management.md).
 
 ## Disclaimers
 
@@ -21,6 +39,42 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 
 ## Current state
 ### Devices available with private_api
+<details><summary> ALTERNATOR <i>(sensors: 17, switches: 1, sliders: 4, selects: 1)</i> </summary>
+<p>
+
+*Sensors*
+- Alternator In Power
+- Station Power
+- Alternator Rated Power  _(disabled)_
+- Charging Power Limit  _(disabled)_
+- Station Battery Charge
+- Discharge Remaining Time
+- Charge Remaining Time
+- Car Battery Voltage
+- Alternator Temperature
+- WiFi Signal Strength  _(disabled)_
+- Alternator Status Code  _(disabled)_
+- Operation Mode  _(disabled)_
+- Charge Current Limit  _(disabled)_
+- Reverse Charge Current Limit  _(disabled)_
+- Charge Current Max  _(disabled)_
+- Reverse Charge Current Max  _(disabled)_
+- Status
+
+*Switches*
+- Charging Enabled
+
+*Sliders (numbers)*
+- Charge Current Limit
+- Reverse Charge Current Limit
+- Car Battery Start Voltage
+- Extension Cable Length
+
+*Selects*
+- Operation Mode
+
+</p></details>
+
 <details><summary> DELTA_2 <i>(sensors: 47, switches: 8, sliders: 6, selects: 5)</i> </summary>
 <p>
 
@@ -74,33 +128,33 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- Prio Solar Charging 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- Prio Solar Charging
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- DC (12V) Charge Current 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-- DC (12V) Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
+- DC (12V) Timeout
 
 </p></details>
 
-<details><summary> DELTA_3 <i>(sensors: 28, switches: 2, sliders: 6, selects: 4)</i> </summary>
+<details><summary> DELTA_3 <i>(sensors: 32, switches: 8, sliders: 4, selects: 5)</i> </summary>
 <p>
 
 *Sensors*
@@ -110,6 +164,69 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Main Remain Capacity  _(disabled)_
 - State of Health
 - Battery Level
+- Battery Charging State
+- Total In Power (energy:  _[Device Name]_ Total In  Energy)
+- Total Out Power (energy:  _[Device Name]_ Total Out  Energy)
+- Solar In Power
+- Solar In Current
+- AC In Power
+- AC Out Power
+- AC In Volts
+- AC Out Volts
+- DC Out Power
+- Type-C (1) Out Power
+- USB QC (1) Out Power
+- USB QC (2) Out Power
+- Charge Remaining Time
+- Discharge Remaining Time
+- Remaining Time
+- PCS DC Temperature
+- PCS AC Temperature
+- Battery Temperature
+- Max Cell Temperature  _(disabled)_
+- Battery Volts  _(disabled)_
+- Min Cell Volts  _(disabled)_
+- Max Cell Volts  _(disabled)_
+- Cycles
+- Solar In Energy
+- Status
+
+*Switches*
+- Beeper
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- USB Enabled
+- AC Always On
+- Backup Reserve Enabled
+- Grid Bypass
+
+*Sliders (numbers)*
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
+
+*Selects*
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
+- DC (12V) Timeout
+
+</p></details>
+
+<details><summary> DELTA_3_1500 <i>(sensors: 44, switches: 9, sliders: 4, selects: 5)</i> </summary>
+<p>
+
+*Sensors*
+- Main Battery Level
+- Main Design Capacity  _(disabled)_
+- Main Full Capacity  _(disabled)_
+- Main Remain Capacity  _(disabled)_
+- State of Health
+- Battery Level
+- Battery Charging State
 - Total In Power (energy:  _[Device Name]_ Total In  Energy)
 - Total Out Power (energy:  _[Device Name]_ Total Out  Energy)
 - AC In Power (energy:  _[Device Name]_ AC In  Energy)
@@ -119,11 +236,12 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Solar In Power (energy:  _[Device Name]_ Solar In  Energy)
 - DC Out Power
 - Type-C (1) Out Power
-- Type-C (2) Out Power
 - USB QC (1) Out Power
 - USB QC (2) Out Power
 - Charge Remaining Time
 - Discharge Remaining Time
+- Remaining Time
+- Inv Out Temperature
 - Cycles
 - Battery Temperature
 - Min Cell Temperature  _(disabled)_
@@ -131,25 +249,45 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Volts  _(disabled)_
 - Min Cell Volts  _(disabled)_
 - Max Cell Volts  _(disabled)_
+- Slave Battery Level  _(auto)_
+- Slave Design Capacity  _(disabled)_
+- Slave Full Capacity  _(disabled)_
+- Slave Remain Capacity  _(disabled)_
+- Slave State of Health
+- Slave Battery Temperature  _(auto)_
+- Slave Min Cell Temperature  _(disabled)_
+- Slave Max Cell Temperature  _(disabled)_
+- Slave Battery Volts  _(disabled)_
+- Slave Min Cell Volts  _(disabled)_
+- Slave Max Cell Volts  _(disabled)_
+- Slave Cycles  _(auto)_
+- Slave In Power  _(auto)_
+- Slave Out Power  _(auto)_
 - Status
 
 *Switches*
-- Beeper 
-- X-Boost Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- Prio Solar Charging
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
+- Grid Bypass
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- AC Charging Power
 
 *Selects*
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-- DC (12V) Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
+- DC (12V) Timeout
 
 </p></details>
 
@@ -191,24 +329,24 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- AC Enabled 
-- AC Always On 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- AC Enabled
+- AC Always On
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
 
 *Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- DC Mode
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -250,24 +388,24 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- AC Enabled 
-- AC Always On 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- AC Enabled
+- AC Always On
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
 
 *Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- DC Mode
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -307,23 +445,23 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
 
 *Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- DC Mode
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -369,25 +507,25 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- AC Always On 
-- Backup Reserve Enabled 
+- Beeper
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- AC Always On
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
 
 *Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- DC Mode
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -468,26 +606,26 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- DC (12V) Enabled 
-- AC Enabled 
-- X-Boost Enabled 
-- AC Always On 
-- Backup Reserve Enabled 
+- Beeper
+- DC (12V) Enabled
+- AC Enabled
+- X-Boost Enabled
+- AC Always On
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- DC (12V) Charge Current 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -544,25 +682,25 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- AC HV Output Enabled 
-- AC LV Output Enabled 
-- 12V DC Output Enabled 
-- 24V DC Output Enabled 
-- X-Boost Enabled 
-- AC Energy Saving Enabled 
-- GFCI Protection Enabled 
+- Beeper
+- AC HV Output Enabled
+- AC LV Output Enabled
+- 12V DC Output Enabled
+- 24V DC Output Enabled
+- X-Boost Enabled
+- AC Energy Saving Enabled
+- GFCI Protection Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
 
 *Selects*
-- Screen Timeout 
-- AC Timeout 
-- DC Timeout 
-- AC Output Type 
+- Screen Timeout
+- AC Timeout
+- DC Timeout
+- AC Output Type
 
 </p></details>
 
@@ -621,19 +759,19 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- AC Enabled 
-- DC (12V) Enabled 
-- X-Boost Enabled 
-- Auto Fan Speed 
+- Beeper
+- AC Enabled
+- DC (12V) Enabled
+- X-Boost Enabled
+- Auto Fan Speed
 
 *Sliders (numbers)*
-- Max Charge Level 
+- Max Charge Level
 
 *Selects*
-- Unit Timeout 
-- DC (12V) Timeout 
-- AC Timeout 
+- Unit Timeout
+- DC (12V) Timeout
+- AC Timeout
 
 </p></details>
 
@@ -690,25 +828,25 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- AC Always On 
-- DC (12V) Enabled 
-- AC Enabled 
-- X-Boost Enabled 
-- AC Slow Charging 
-- Auto Fan Speed 
+- Beeper
+- AC Always On
+- DC (12V) Enabled
+- AC Enabled
+- X-Boost Enabled
+- AC Slow Charging
+- Auto Fan Speed
 
 *Sliders (numbers)*
-- Max Charge Level 
+- Max Charge Level
 
 *Selects*
-- Unit Timeout 
-- DC (12V) Timeout 
-- AC Timeout 
+- Unit Timeout
+- DC (12V) Timeout
+- AC Timeout
 
 </p></details>
 
-<details><summary> RIVER_MINI <i>(sensors: 17, switches: 2, sliders: 1, selects: 0)</i> </summary>
+<details><summary> RIVER_MINI <i>(sensors: 17, switches: 2, sliders: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -731,13 +869,11 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Cycles
 
 *Switches*
-- AC Enabled 
-- X-Boost Enabled 
+- AC Enabled
+- X-Boost Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-
-*Selects*
+- Max Charge Level
 
 </p></details>
 
@@ -786,25 +922,25 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- DC (12V) Enabled 
-- AC Enabled 
-- X-Boost Enabled 
+- Beeper
+- DC (12V) Enabled
+- AC Enabled
+- X-Boost Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
 
 *Selects*
-- DC (12V) Charge Current 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
-<details><summary> DELTA_MAX <i>(sensors: 70, switches: 7, sliders: 5, selects: 0)</i> </summary>
+<details><summary> DELTA_MAX <i>(sensors: 70, switches: 7, sliders: 5)</i> </summary>
 <p>
 
 *Sensors*
@@ -880,22 +1016,20 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- Prio Solar Charging 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- Prio Solar Charging
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
-
-*Selects*
+- Max Charge Level
+- Min Discharge Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 </p></details>
 
@@ -985,30 +1119,30 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status (Scheduled)
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
-<details><summary> POWERSTREAM <i>(sensors: 63, switches: 1, sliders: 2, selects: 1)</i> </summary>
+<details><summary> POWERSTREAM <i>(sensors: 63, switches: 1, sliders: 3, selects: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -1060,7 +1194,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Inverter Error Code  _(disabled)_
 - Inverter Warning Code  _(disabled)_
 - Inverter Status  _(disabled)_
-- Other Loads
+- Custom Load Power
 - Smart Plug Loads
 - Rated Power
 - Lower Battery Limit  _(disabled)_
@@ -1077,18 +1211,19 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Feed-in Control 
+- Feed-in Control
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
+- Max Charge Level
+- Min Discharge Level
+- Custom Load Power
 
 *Selects*
-- Power supply mode 
+- Power supply mode
 
 </p></details>
 
-<details><summary> GLACIER <i>(sensors: 33, switches: 3, sliders: 3, selects: 0)</i> </summary>
+<details><summary> GLACIER <i>(sensors: 29, binary_sensors: 4, switches: 3, sliders: 3)</i> </summary>
 <p>
 
 *Sensors*
@@ -1110,7 +1245,6 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Volts  _(disabled)_
 - Min Cell Volts  _(disabled)_
 - Max Cell Volts  _(disabled)_
-- Battery Present
 - XT60 State
 - Fan Level
 - Ambient Temperature
@@ -1118,29 +1252,109 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Water Temperature
 - Left Temperature
 - Right Temperature
-- Dual Zone Mode
 - Ice Time Remain
 - Ice Percentage
 - Ice Make Mode
-- Ice Alert
-- Ice Water Level OK
 - Status
 
+*Binary sensors*
+- Battery Present
+- Dual Zone Mode
+- Ice Alert
+- Ice Water Level OK
+
 *Switches*
-- Beeper 
-- Eco Mode 
-- Power 
+- Beeper
+- Eco Mode
+- Power
 
 *Sliders (numbers)*
-- Left Set Temperature 
-- Combined Set Temperature 
-- Right Set Temperature 
-
-*Selects*
+- Left Set Temperature
+- Combined Set Temperature
+- Right Set Temperature
 
 </p></details>
 
-<details><summary> WAVE_2 <i>(sensors: 27, switches: 0, sliders: 1, selects: 4)</i> </summary>
+<details><summary> GLACIER_CLASSIC <i>(sensors: 50, binary_sensors: 3, switches: 5, sliders: 4, selects: 2)</i> </summary>
+<p>
+
+*Sensors*
+- Main Battery Level
+- Main Design Capacity  _(disabled)_
+- Main Full Capacity  _(disabled)_
+- Main Remain Capacity  _(disabled)_
+- Battery Level
+- Battery Charging State
+- Total In Power
+- Total Out Power
+- Charge Remaining Time
+- Discharge Remaining Time
+- Battery Remaining Time  _(disabled)_
+- Cycles
+- Battery Temperature
+- Min MOS Temperature  _(disabled)_
+- Max MOS Temperature  _(disabled)_
+- Left Temperature  _(disabled)_
+- Right Temperature  _(disabled)_
+- Combined Temperature  _(disabled)_
+- Battery Pack Temperature  _(disabled)_
+- Input Voltage  _(disabled)_
+- Battery Volts  _(disabled)_
+- Min Cell Volts  _(disabled)_
+- Max Cell Volts  _(disabled)_
+- Battery Current  _(disabled)_
+- Target Charge Current  _(disabled)_
+- Actual Battery SOC  _(disabled)_
+- Battery SOC Delta  _(disabled)_
+- Target Battery SOC  _(disabled)_
+- Screen Off Time
+- Device Standby Time  _(disabled)_
+- Runtime Full Upload Period  _(disabled)_
+- Runtime Incremental Upload Period  _(disabled)_
+- Display Full Upload Period  _(disabled)_
+- Display Incremental Upload Period  _(disabled)_
+- BMS Fault Code  _(disabled)_
+- BMS Error Code  _(disabled)_
+- PD Error Code  _(disabled)_
+- All Error Code  _(disabled)_
+- All BMS Fault  _(disabled)_
+- BQ System Status Register  _(disabled)_
+- BMS Serial  _(disabled)_
+- Main BMS Serial  _(disabled)_
+- BMS Hardware Version  _(disabled)_
+- BMS Warning State  _(disabled)_
+- Open BMS Index  _(disabled)_
+- Max Available Modules  _(disabled)_
+- Temperature Unit  _(disabled)_
+- Temperature Unit Raw  _(disabled)_
+- Status
+- Protobuf Debug  _(disabled)_
+
+*Binary sensors*
+- Dual Zone Mode
+- Lid Status
+- External Supply Connected
+
+*Switches*
+- Beeper
+- Eco Mode
+- Child Lock
+- Simple Mode
+- Temperature Alert
+
+*Sliders (numbers)*
+- Left Set Temperature
+- Right Set Temperature
+- Max Charge Level
+- Min Discharge Level
+
+*Selects*
+- Battery Protection
+- Device Standby Time
+
+</p></details>
+
+<details><summary> WAVE_2 <i>(sensors: 27, sliders: 1, selects: 4)</i> </summary>
 <p>
 
 *Sensors*
@@ -1172,20 +1386,54 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - PV input power
 - Status
 
-*Switches*
-
 *Sliders (numbers)*
-- Set Temperature 
+- Set Temperature
 
 *Selects*
-- Wind speed 
-- Main mode 
-- Remote startup/shutdown 
-- Sub-mode 
+- Wind speed
+- Main mode
+- Remote startup/shutdown
+- Sub-mode
 
 </p></details>
 
-<details><summary> SMART_METER <i>(sensors: 18, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> WAVE_3 <i>(sensors: 17, switches: 2, sliders: 1, selects: 3)</i> </summary>
+<p>
+
+*Sensors*
+- Total In Power
+- Total Out Power
+- AC Out Power
+- AC In Power
+- DC Battery Power
+- Solar In Power
+- Self Consumption Power  _(disabled)_
+- Main Battery Level
+- Water Level
+- Discharge Remaining Time
+- Charge Remaining Time
+- Power Off Delay Remaining
+- Ambient Temperature
+- Indoor Supply Air Temp  _(disabled)_
+- Condenser Temp  _(disabled)_
+- Evaporator Temp  _(disabled)_
+- BMS Error Code  _(disabled)_
+
+*Switches*
+- Beeper
+- Auto Drain
+
+*Sliders (numbers)*
+- Screen Brightness
+
+*Selects*
+- Screen Timeout
+- Unit Timeout
+- Auto-Off Timeout
+
+</p></details>
+
+<details><summary> SMART_METER <i>(sensors: 18)</i> </summary>
 <p>
 
 *Sensors*
@@ -1208,15 +1456,28 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Timezone  _(disabled)_
 - Status
 
+</p></details>
+
+<details><summary> SMART_PLUG <i>(sensors: 5, switches: 1, sliders: 2)</i> </summary>
+<p>
+
+*Sensors*
+- Temperature
+- Volts
+- Current
+- Power
+- Status
+
 *Switches*
+- On
 
 *Sliders (numbers)*
-
-*Selects*
+- Brightness
+- Max Power
 
 </p></details>
 
-<details><summary> STREAM_AC <i>(sensors: 39, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> STREAM_AC <i>(sensors: 39)</i> </summary>
 <p>
 
 *Sensors*
@@ -1260,15 +1521,9 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Temperature  _(disabled)_
 - Battery Volts  _(disabled)_
 
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
-
 </p></details>
 
-<details><summary> STREAM_PRO <i>(sensors: 39, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> STREAM_PRO <i>(sensors: 39)</i> </summary>
 <p>
 
 *Sensors*
@@ -1312,15 +1567,9 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Temperature  _(disabled)_
 - Battery Volts  _(disabled)_
 
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
-
 </p></details>
 
-<details><summary> STREAM_ULTRA <i>(sensors: 39, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> STREAM_ULTRA <i>(sensors: 39)</i> </summary>
 <p>
 
 *Sensors*
@@ -1363,17 +1612,11 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power AC SYS  _(disabled)_
 - Battery Temperature  _(disabled)_
 - Battery Volts  _(disabled)_
-
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
 
 </p></details>
 
 ### Devices available with public_api
-<details><summary> DELTA Max (API) <i>(sensors: 70, switches: 7, sliders: 5, selects: 0)</i> </summary>
+<details><summary> DELTA Max (API) <i>(sensors: 70, switches: 7, sliders: 5)</i> </summary>
 <p>
 
 *Sensors*
@@ -1449,22 +1692,20 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- Prio Solar Charging 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- Prio Solar Charging
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
-
-*Selects*
+- Max Charge Level
+- Min Discharge Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 </p></details>
 
@@ -1545,30 +1786,30 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- DC (12V) Enabled 
-- AC Enabled 
-- X-Boost Enabled 
-- AC Always On 
-- Backup Reserve Enabled 
+- Beeper
+- DC (12V) Enabled
+- AC Enabled
+- X-Boost Enabled
+- AC Always On
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- DC (12V) Charge Current 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
-<details><summary> DELTA Pro Ultra (API) <i>(sensors: 58, switches: 3, sliders: 4, selects: 0)</i> </summary>
+<details><summary> DELTA Pro Ultra (API) <i>(sensors: 58, switches: 3, sliders: 4)</i> </summary>
 <p>
 
 *Sensors*
@@ -1632,17 +1873,15 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - DC Anderson Out Power (energy:  _[Device Name]_ DC Anderson Out  Energy)
 
 *Switches*
-- Wireless 4G Enabled 
-- Battery Auto-Heating Enabled 
-- DC Mode 
+- Wireless 4G Enabled
+- Battery Auto-Heating Enabled
+- DC Mode
 
 *Sliders (numbers)*
-- Min Discharge Level 
-- Max Charge Level 
-- AC Charging Power 
-- Power I/O Port Charging Power 
-
-*Selects*
+- Min Discharge Level
+- Max Charge Level
+- AC Charging Power
+- Power I/O Port Charging Power
 
 </p></details>
 
@@ -1699,29 +1938,29 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- Prio Solar Charging 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- Prio Solar Charging
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- DC (12V) Charge Current 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-- DC (12V) Timeout 
+- DC (12V) Charge Current
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
+- DC (12V) Timeout
 
 </p></details>
 
@@ -1811,197 +2050,26 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status (Scheduled)
 
 *Switches*
-- Beeper 
-- USB Enabled 
-- AC Always On 
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- Beeper
+- USB Enabled
+- AC Always On
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Backup Reserve Level
+- Generator Auto Start Level
+- Generator Auto Stop Level
+- AC Charging Power
 
 *Selects*
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-
-</p></details>
-
-<details><summary> DELTA 3 (API) <i>(sensors: 28, switches: 2, sliders: 6, selects: 4)</i> </summary>
-<p>
-
-*Sensors*
-- Main Battery Level
-- Main Design Capacity  _(disabled)_
-- Main Full Capacity  _(disabled)_
-- Main Remain Capacity  _(disabled)_
-- State of Health
-- Battery Level
-- Total In Power (energy:  _[Device Name]_ Total In  Energy)
-- Total Out Power (energy:  _[Device Name]_ Total Out  Energy)
-- AC In Power (energy:  _[Device Name]_ AC In  Energy)
-- AC Out Power (energy:  _[Device Name]_ AC Out  Energy)
-- AC In Volts
-- AC Out Volts
-- Solar In Power (energy:  _[Device Name]_ Solar In  Energy)
-- DC Out Power
-- Type-C (1) Out Power
-- Type-C (2) Out Power
-- USB QC (1) Out Power
-- USB QC (2) Out Power
-- Charge Remaining Time
-- Discharge Remaining Time
-- Cycles
-- Battery Temperature
-- Min Cell Temperature  _(disabled)_
-- Max Cell Temperature  _(disabled)_
-- Battery Volts  _(disabled)_
-- Min Cell Volts  _(disabled)_
-- Max Cell Volts  _(disabled)_
-- Status
-
-*Switches*
-- Beeper 
-- X-Boost Enabled 
-
-*Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Backup Reserve Level 
-- Generator Auto Start Level 
-- Generator Auto Stop Level 
-- AC Charging Power 
-
-*Selects*
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-- DC (12V) Timeout 
-
-</p></details>
-
-<details><summary> RIVER 2 (API) <i>(sensors: 32, switches: 5, sliders: 4, selects: 5)</i> </summary>
-<p>
-
-*Sensors*
-- Main Battery Level
-- Main Design Capacity  _(disabled)_
-- Main Full Capacity  _(disabled)_
-- Main Remain Capacity  _(disabled)_
-- State of Health
-- Battery Level
-- Battery Charging State
-- Total In Power (energy:  _[Device Name]_ Total In  Energy)
-- Total Out Power (energy:  _[Device Name]_ Total Out  Energy)
-- Solar In Current
-- Solar In Voltage
-- AC In Power (energy:  _[Device Name]_ AC In  Energy)
-- AC Out Power (energy:  _[Device Name]_ AC Out  Energy)
-- AC In Volts
-- AC Out Volts
-- Type-C In Power
-- Solar In Power (energy:  _[Device Name]_ Solar In  Energy)
-- DC Out Power
-- Type-C Out Power
-- USB Out Power
-- Charge Remaining Time
-- Discharge Remaining Time
-- Remaining Time
-- Inv Out Temperature
-- Cycles
-- Battery Temperature
-- Min Cell Temperature  _(disabled)_
-- Max Cell Temperature  _(disabled)_
-- Battery Volts  _(disabled)_
-- Min Cell Volts  _(disabled)_
-- Max Cell Volts  _(disabled)_
-- Status
-
-*Switches*
-- AC Enabled 
-- AC Always On 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
-
-*Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
-
-*Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
-
-</p></details>
-
-<details><summary> RIVER 2 Max (API) <i>(sensors: 32, switches: 5, sliders: 4, selects: 5)</i> </summary>
-<p>
-
-*Sensors*
-- Main Battery Level
-- Main Design Capacity  _(disabled)_
-- Main Full Capacity  _(disabled)_
-- Main Remain Capacity  _(disabled)_
-- State of Health
-- Battery Level
-- Battery Charging State
-- Total In Power (energy:  _[Device Name]_ Total In  Energy)
-- Total Out Power (energy:  _[Device Name]_ Total Out  Energy)
-- Solar In Current
-- Solar In Voltage
-- AC In Power (energy:  _[Device Name]_ AC In  Energy)
-- AC Out Power (energy:  _[Device Name]_ AC Out  Energy)
-- AC In Volts
-- AC Out Volts
-- Type-C In Power
-- Solar In Power (energy:  _[Device Name]_ Solar In  Energy)
-- DC Out Power
-- Type-C Out Power
-- USB Out Power
-- Charge Remaining Time
-- Discharge Remaining Time
-- Remaining Time
-- Inv Out Temperature
-- Cycles
-- Battery Temperature
-- Min Cell Temperature  _(disabled)_
-- Max Cell Temperature  _(disabled)_
-- Battery Volts  _(disabled)_
-- Min Cell Volts  _(disabled)_
-- Max Cell Volts  _(disabled)_
-- Status
-
-*Switches*
-- AC Enabled 
-- AC Always On 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
-
-*Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
-
-*Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
@@ -2041,27 +2109,27 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- AC Enabled 
-- X-Boost Enabled 
-- DC (12V) Enabled 
-- Backup Reserve Enabled 
+- AC Enabled
+- X-Boost Enabled
+- DC (12V) Enabled
+- Backup Reserve Enabled
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- AC Charging Power 
-- Backup Reserve Level 
+- Max Charge Level
+- Min Discharge Level
+- AC Charging Power
+- Backup Reserve Level
 
 *Selects*
-- DC (12V) Charge Current 
-- DC Mode 
-- Screen Timeout 
-- Unit Timeout 
-- AC Timeout 
+- DC (12V) Charge Current
+- DC Mode
+- Screen Timeout
+- Unit Timeout
+- AC Timeout
 
 </p></details>
 
-<details><summary> Smart Plug (API) <i>(sensors: 4, switches: 1, sliders: 1, selects: 0)</i> </summary>
+<details><summary> Smart Plug (API) <i>(sensors: 4, switches: 1, sliders: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -2071,16 +2139,14 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power
 
 *Switches*
-- On 
+- On
 
 *Sliders (numbers)*
-- Brightness 
-
-*Selects*
+- Brightness
 
 </p></details>
 
-<details><summary> PowerStream (API) <i>(sensors: 58, switches: 0, sliders: 4, selects: 1)</i> </summary>
+<details><summary> PowerStream (API) <i>(sensors: 58, sliders: 4, selects: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -2132,7 +2198,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Inverter Error Code  _(disabled)_
 - Inverter Warning Code  _(disabled)_
 - Inverter Status  _(disabled)_
-- Other Loads
+- Custom Load Power
 - Smart Plug Loads
 - Rated Power
 - Lower Battery Limit  _(disabled)_
@@ -2141,22 +2207,20 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Wireless Warning Code  _(disabled)_
 - LED Brightness  _(disabled)_
 - Heartbeat Frequency  _(disabled)_
-- Status
-
-*Switches*
+- Status (Scheduled)
 
 *Sliders (numbers)*
-- Min Discharge Level 
-- Max Charge Level 
-- Brightness 
-- Custom load power settings 
+- Min Discharge Level
+- Max Charge Level
+- Brightness
+- Custom Load Power
 
 *Selects*
-- Power supply mode 
+- Power supply mode
 
 </p></details>
 
-<details><summary> WAVE 2 (API) <i>(sensors: 27, switches: 0, sliders: 1, selects: 4)</i> </summary>
+<details><summary> WAVE 2 (API) <i>(sensors: 27, sliders: 1, selects: 4)</i> </summary>
 <p>
 
 *Sensors*
@@ -2188,16 +2252,14 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - PV input power
 - Status
 
-*Switches*
-
 *Sliders (numbers)*
-- Set Temperature 
+- Set Temperature
 
 *Selects*
-- Wind speed 
-- Main mode 
-- Remote startup/shutdown 
-- Sub-mode 
+- Wind speed
+- Main mode
+- Remote startup/shutdown
+- Sub-mode
 
 </p></details>
 
@@ -2238,33 +2300,33 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Status
 
 *Switches*
-- Beeper 
-- AC HV Output Enabled 
-- AC LV Output Enabled 
-- 12V DC Output Enabled 
-- 24V DC Output Enabled 
-- X-Boost Enabled 
-- AC Energy Saving Enabled 
-- Smart Generator Auto Start/Stop 
+- Beeper
+- AC HV Output Enabled
+- AC LV Output Enabled
+- 12V DC Output Enabled
+- 24V DC Output Enabled
+- X-Boost Enabled
+- AC Energy Saving Enabled
+- Smart Generator Auto Start/Stop
 
 *Sliders (numbers)*
-- Max Charge Level 
-- Min Discharge Level 
-- Smart Generator Start SOC 
-- Smart Generator Stop SOC 
-- AC Charging Power 
+- Max Charge Level
+- Min Discharge Level
+- Smart Generator Start SOC
+- Smart Generator Stop SOC
+- AC Charging Power
 
 *Selects*
-- Screen Timeout 
-- AC Timeout 
-- DC Timeout 
-- Bluetooth Timeout 
-- Device Timeout 
-- AC Output Type 
+- Screen Timeout
+- AC Timeout
+- DC Timeout
+- Bluetooth Timeout
+- Device Timeout
+- AC Output Type
 
 </p></details>
 
-<details><summary> Power Kits (API) <i>(sensors: 161, switches: 10, sliders: 1, selects: 0)</i> </summary>
+<details><summary> Power Kits (API) <i>(sensors: 161, switches: 10, sliders: 1)</i> </summary>
 <p>
 
 ### bbcin
@@ -2304,11 +2366,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Alt. Voltage Limit En
 
 *Switches*
-- Main DC Output 
-
-*Sliders (numbers)*
-
-*Selects*
+- Main DC Output
 
 ### bbcout
 
@@ -2319,12 +2377,6 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - DC 1 Out Battery Current  _(disabled)_
 - DC 2 Out Battery Current  _(disabled)_
 - DC Out Battery Voltage  _(disabled)_
-
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
 
 ### iclow
 
@@ -2349,13 +2401,11 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Fan Level  _(disabled)_
 
 *Switches*
-- AC Output 
-- AC Charging 
+- AC Output
+- AC Charging
 
 *Sliders (numbers)*
-- AC Charging Power 
-
-*Selects*
+- AC Charging Power
 
 ### bpxxx
 
@@ -2372,12 +2422,6 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - remaining time battery (SN)
 - maximum cell voltage battery (SN)
 - discharing power battery (SN)
-
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
 
 ### kitscc
 
@@ -2409,12 +2453,6 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Solar (3) Temperature
 - Solar Total Charge Current  _(disabled)_
 - Solar Energy for Day  _(disabled)_
-
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
 
 ### lddc
 
@@ -2452,16 +2490,12 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - DC Out Voltage
 
 *Switches*
-- DC Switch 1 
-- DC Switch 2 
-- DC Switch 3 
-- DC Switch 4 
-- DC Switch 5 
-- DC Switch 6 
-
-*Sliders (numbers)*
-
-*Selects*
+- DC Switch 1
+- DC Switch 2
+- DC Switch 3
+- DC Switch 4
+- DC Switch 5
+- DC Switch 6
 
 ### ichigh
 
@@ -2485,11 +2519,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - AC Output Day Power  _(disabled)_
 
 *Switches*
-- Prioretize grid 
-
-*Sliders (numbers)*
-
-*Selects*
+- Prioretize grid
 
 ### ldac
 
@@ -2513,15 +2543,9 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Distributer AC Temperature 2
 - AC Charge State
 
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
-
 </p></details>
 
-<details><summary> Smart Meter (API) <i>(sensors: 28, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> Smart Meter (API) <i>(sensors: 23, binary_sensors: 5)</i> </summary>
 <p>
 
 *Sensors*
@@ -2535,9 +2559,6 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power Grid (L1) Volts  _(disabled)_
 - Power Grid (L2) Volts  _(disabled)_
 - Power Grid (L3) Volts  _(disabled)_
-- Flag L1  _(disabled)_
-- Flag L2  _(disabled)_
-- Flag L3  _(disabled)_
 - L1 Lifetime net usage  _(disabled)_
 - L2 Lifetime net usage  _(disabled)_
 - L3 Lifetime net usage  _(disabled)_
@@ -2550,19 +2571,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Country code  _(disabled)_
 - Town code  _(disabled)_
 - System group id  _(disabled)_
-- Factory mode enabled  _(disabled)_
-- Debug mode enabled  _(disabled)_
 - Status
 
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
+*Binary sensors*
+- Flag L1  _(disabled)_
+- Flag L2  _(disabled)_
+- Flag L3  _(disabled)_
+- Factory mode enabled  _(disabled)_
+- Debug mode enabled  _(disabled)_
 
 </p></details>
 
-<details><summary> Stream AC (API) <i>(sensors: 41, switches: 5, sliders: 1, selects: 0)</i> </summary>
+<details><summary> Stream AC (API) <i>(sensors: 53, switches: 5, sliders: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -2591,6 +2611,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power PV 2  _(auto)_
 - Power PV 3  _(auto)_
 - Power PV 4  _(auto)_
+- Power PV 1  _(auto)_
+- Power PV 2  _(auto)_
+- Power PV 3  _(auto)_
+- Power PV 4  _(auto)_
+- Power PV1 Volts  _(auto)_
+- Power PV2 Volts  _(auto)_
+- Power PV3 Volts  _(auto)_
+- Power PV4 Volts  _(auto)_
+- Power PV1 In Amps  _(auto)_
+- Power PV2 In Amps  _(auto)_
+- Power PV3 In Amps  _(auto)_
+- Power PV4 In Amps  _(auto)_
 - Power PV Sum
 - Power SCHUKO1  _(auto)_
 - Power SCHUKO2  _(auto)_
@@ -2609,20 +2641,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Volts  _(disabled)_
 
 *Switches*
-- AC 1 On 
-- AC 2 On 
-- Operating mode - Self-powered 
-- Operating mode - AI Mode 
-- Feed-in control 
+- AC 1 On
+- AC 2 On
+- Operating mode - Self-powered
+- Operating mode - AI Mode
+- Feed-in control
 
 *Sliders (numbers)*
-- Backup Reserve Level 
-
-*Selects*
+- Backup Reserve Level
 
 </p></details>
 
-<details><summary> Stream PRO (API) <i>(sensors: 41, switches: 5, sliders: 1, selects: 0)</i> </summary>
+<details><summary> Stream PRO (API) <i>(sensors: 53, switches: 5, sliders: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -2651,6 +2681,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power PV 2  _(auto)_
 - Power PV 3  _(auto)_
 - Power PV 4  _(auto)_
+- Power PV 1  _(auto)_
+- Power PV 2  _(auto)_
+- Power PV 3  _(auto)_
+- Power PV 4  _(auto)_
+- Power PV1 Volts  _(auto)_
+- Power PV2 Volts  _(auto)_
+- Power PV3 Volts  _(auto)_
+- Power PV4 Volts  _(auto)_
+- Power PV1 In Amps  _(auto)_
+- Power PV2 In Amps  _(auto)_
+- Power PV3 In Amps  _(auto)_
+- Power PV4 In Amps  _(auto)_
 - Power PV Sum
 - Power SCHUKO1  _(auto)_
 - Power SCHUKO2  _(auto)_
@@ -2669,20 +2711,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Volts  _(disabled)_
 
 *Switches*
-- AC 1 On 
-- AC 2 On 
-- Operating mode - Self-powered 
-- Operating mode - AI Mode 
-- Feed-in control 
+- AC 1 On
+- AC 2 On
+- Operating mode - Self-powered
+- Operating mode - AI Mode
+- Feed-in control
 
 *Sliders (numbers)*
-- Backup Reserve Level 
-
-*Selects*
+- Backup Reserve Level
 
 </p></details>
 
-<details><summary> Stream Ultra (API) <i>(sensors: 41, switches: 5, sliders: 1, selects: 0)</i> </summary>
+<details><summary> Stream Ultra (API) <i>(sensors: 53, switches: 5, sliders: 1)</i> </summary>
 <p>
 
 *Sensors*
@@ -2711,6 +2751,18 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Power PV 2  _(auto)_
 - Power PV 3  _(auto)_
 - Power PV 4  _(auto)_
+- Power PV 1  _(auto)_
+- Power PV 2  _(auto)_
+- Power PV 3  _(auto)_
+- Power PV 4  _(auto)_
+- Power PV1 Volts  _(auto)_
+- Power PV2 Volts  _(auto)_
+- Power PV3 Volts  _(auto)_
+- Power PV4 Volts  _(auto)_
+- Power PV1 In Amps  _(auto)_
+- Power PV2 In Amps  _(auto)_
+- Power PV3 In Amps  _(auto)_
+- Power PV4 In Amps  _(auto)_
 - Power PV Sum
 - Power SCHUKO1  _(auto)_
 - Power SCHUKO2  _(auto)_
@@ -2729,24 +2781,24 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Battery Volts  _(disabled)_
 
 *Switches*
-- AC 1 On 
-- AC 2 On 
-- Operating mode - Self-powered 
-- Operating mode - AI Mode 
-- Feed-in control 
+- AC 1 On
+- AC 2 On
+- Operating mode - Self-powered
+- Operating mode - AI Mode
+- Feed-in control
 
 *Sliders (numbers)*
-- Backup Reserve Level 
-
-*Selects*
+- Backup Reserve Level
 
 </p></details>
 
-<details><summary> Stream Microinverter (API) <i>(sensors: 12, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> Stream Microinverter (API) <i>(sensors: 14)</i> </summary>
 <p>
 
 *Sensors*
 - Power AC
+- Power PV 1  _(auto)_
+- Power PV 2  _(auto)_
 - Power PV 1  _(auto)_
 - Power PV 2  _(auto)_
 - Power Volts  _(disabled)_
@@ -2759,40 +2811,64 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Grid Frequency
 - Status
 
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
-
 </p></details>
 
-<details><summary> Smart Home Panel (API) <i>(sensors: 8, switches: 2, sliders: 2, selects: 0)</i> </summary>
+<details><summary> Smart Home Panel (API) <i>(sensors: 30, binary_sensors: 1, switches: 4, sliders: 4, selects: 1)</i> </summary>
 <p>
 
 *Sensors*
-- Power Grid
 - Battery Level
+- Battery 1 Level
+- Battery 2 Level  _(disabled)_
 - Remaining Time
-- Main Battery Temperature
-- Main Battery Input Power (energy:  _[Device Name]_ Main Battery Input  Energy)
-- Main Battery Output Power (energy:  _[Device Name]_ Main Battery Output  Energy)
+- Battery 1 Charge Remaining Time  _(disabled)_
+- Battery 2 Charge Remaining Time  _(disabled)_
+- Battery 1 Discharge Remaining Time  _(disabled)_
+- Battery 2 Discharge Remaining Time  _(disabled)_
+- Battery 1 Temperature
+- Battery 2 Temperature  _(disabled)_
+- Battery 1 Input Power (energy:  _[Device Name]_ Battery 1 Input  Energy)
+- Battery 2 Input Power  _(disabled)_ (energy:  _[Device Name]_ Battery 2 Input  Energy)
+- Battery 1 Output Power (energy:  _[Device Name]_ Battery 1 Output  Energy)
+- Battery 2 Output Power  _(disabled)_ (energy:  _[Device Name]_ Battery 2 Output  Energy)
 - Power Grid Today
 - Battery Today
+- Power Grid Voltage
+- Power Grid Frequency
+- Battery 1 Current  _(disabled)_
+- Battery 2 Current  _(disabled)_
+- Circuit 1 Current  _(disabled)_
+- Circuit 2 Current  _(disabled)_
+- Circuit 3 Current  _(disabled)_
+- Circuit 4 Current  _(disabled)_
+- Circuit 5 Current  _(disabled)_
+- Circuit 6 Current  _(disabled)_
+- Circuit 7 Current  _(disabled)_
+- Circuit 8 Current  _(disabled)_
+- Circuit 9 Current  _(disabled)_
+- Circuit 10 Current  _(disabled)_
+
+*Binary sensors*
+- Power Grid
 
 *Switches*
-- EPS Mode 
-- Main Battery Charge 
+- EPS Mode
+- Scheduled Charge
+- Battery 1 Charge
+- Battery 2 Charge
 
 *Sliders (numbers)*
-- Min Discharge Level 
-- Max Charge Level 
+- Min Discharge Level
+- Max Charge Level
+- Scheduled Charge Battery Level
+- Scheduled Charge Power
 
 *Selects*
+- Scheduled Charge Battery
 
 </p></details>
 
-<details><summary> Smart Home Panel 2 (API) <i>(sensors: 30, switches: 20, sliders: 5, selects: 2)</i> </summary>
+<details><summary> Smart Home Panel 2 (API) <i>(sensors: 28, binary_sensors: 2, switches: 20, sliders: 5, selects: 2)</i> </summary>
 <p>
 
 *Sensors*
@@ -2801,9 +2877,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - AC Out Power (energy:  _[Device Name]_ AC Out  Energy)
 - Battery Level
 - Discharge Remaining Time
-- Power Grid
 - Power Grid Voltage  _(disabled)_
-- In Storm Mode
 - Relay 1 Operation Count  _(disabled)_
 - Relay 2 Operation Count  _(disabled)_
 - Relay 3 Operation Count  _(disabled)_
@@ -2827,42 +2901,46 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - Breaker11 Power (energy:  _[Device Name]_ Breaker11  Energy)
 - Breaker12 Power (energy:  _[Device Name]_ Breaker12  Energy)
 
+*Binary sensors*
+- Power Grid
+- In Storm Mode
+
 *Switches*
-- EPS Mode 
-- Storm Guard 
-- Battery 1 
-- Battery 2 
-- Battery 3 
-- Battery 1 Force Charge 
-- Battery 2 Force Charge 
-- Battery 3 Force Charge 
-- Breaker 1 
-- Breaker 2 
-- Breaker 3 
-- Breaker 4 
-- Breaker 5 
-- Breaker 6 
-- Breaker 7 
-- Breaker 8 
-- Breaker 9 
-- Breaker 10 
-- Breaker 11 
-- Breaker 12 
+- EPS Mode
+- Storm Guard
+- Battery 1
+- Battery 2
+- Battery 3
+- Battery 1 Force Charge
+- Battery 2 Force Charge
+- Battery 3 Force Charge
+- Breaker 1
+- Breaker 2
+- Breaker 3
+- Breaker 4
+- Breaker 5
+- Breaker 6
+- Breaker 7
+- Breaker 8
+- Breaker 9
+- Breaker 10
+- Breaker 11
+- Breaker 12
 
 *Sliders (numbers)*
-- Backup Reserve Level 
-- AC Charging Power 
-- Max Charge Level 
-- Generator Battery Charging Power 
-- Generator Max Output Power 
+- Backup Reserve Level
+- AC Charging Power
+- Max Charge Level
+- Generator Battery Charging Power
+- Generator Max Output Power
 
 *Selects*
-- Operating Mode 
-- Generator Type 
+- Operating Mode
+- Generator Type
 
 </p></details>
 
-<details><summary> Power Ocean (API) <i>(sensors: 23, switches: 0, sliders: 0, selects: 0)</i> </summary>
+<details><summary> Power Ocean (API) <i>(sensors: 23)</i> </summary>
 <p>
 
 *Sensors*
@@ -2888,12 +2966,7 @@ Once installed, use Add Integration -> Ecoflow Cloud.
 - mpptPv2.pwr
 - mpptPv2.amp
 - mpptPv2.vol
-- Status
-
-*Switches*
-
-*Sliders (numbers)*
-
-*Selects*
+- Status (Scheduled)
 
 </p></details>
+

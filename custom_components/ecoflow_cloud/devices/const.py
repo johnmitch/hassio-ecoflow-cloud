@@ -114,6 +114,7 @@ POWER_SUPPLY_PRIORITY_OPTIONS = {
     "Prioritize power supply": 0,
     "Prioritize power storage": 1
 }
+CUSTOM_LOAD_POWER = "Custom Load Power"
 
 UTC_TIMEZONE = "Timezone"
 UTC_TIMEZONE_ID = "Timezone name"
@@ -251,6 +252,7 @@ GEN_TYPE_OPTIONS = {
 }
 
 POWER = "Power"
+MAX_POWER = "Max Power"
 ENERGY = "Energy"
 CURRENT = "Current"
 MAX_CURRENT = "Max Current"
@@ -267,6 +269,7 @@ XBOOST_ENABLED = "X-Boost Enabled"
 AC_ALWAYS_ENABLED = "AC Always On"
 PV_PRIO = "Prio Solar Charging"
 BP_ENABLED = "Backup Reserve Enabled"
+GRID_BYPASS = "Grid Bypass"
 AUTO_FAN_SPEED = "Auto Fan Speed"
 AC_SLOW_CHARGE = "AC Slow Charging"
 
@@ -338,8 +341,12 @@ STREAM_POWER_PV_3 = "Power PV 3"
 STREAM_POWER_PV_4 = "Power PV 4"
 STREAM_IN_AMPS_PV_1 = "Power PV1 In Amps"
 STREAM_IN_AMPS_PV_2 = "Power PV2 In Amps"
+STREAM_IN_AMPS_PV_3 = "Power PV3 In Amps"
+STREAM_IN_AMPS_PV_4 = "Power PV4 In Amps"
 STREAM_IN_VOL_PV_1 = "Power PV1 Volts"
 STREAM_IN_VOL_PV_2 = "Power PV2 Volts"
+STREAM_IN_VOL_PV_3 = "Power PV3 Volts"
+STREAM_IN_VOL_PV_4 = "Power PV4 Volts"
 STREAM_POWER_PV_SUM = "Power PV Sum"
 STREAM_GET_SYS_LOAD = "Power Sys Load" # powGetSysLoad
 STREAM_GET_SYS_LOAD_FROM_BP = "Power Sys Load From Battery" # powGetSysLoadFromBp
@@ -411,22 +418,35 @@ POWER_GRID = "Power Grid"
 POWER_GRID_TODAY = "Power Grid Today"
 BATTERY_TODAY = "Battery Today"
 EPS_MODE = "EPS Mode"
-MAIN_CHARGE_REMAINING_TIME = "Main Charge Remaining Time"
-MAIN_DISCHARGE_REMAINING_TIME = "Main Discharge Remaining Time"
-MAIN_BATTERY_TEMP = "Main Battery Temperature"
-MAIN_BATTERY_IN_POWER = "Main Battery Input Power"
-MAIN_BATTERY_OUT_POWER = "Main Battery Output Power"
-MAIN_BATTERY_CHARGE = "Main Battery Charge"
+SCHEDULED_CHARGE = "Scheduled Charge"
+SCHEDULED_CHARGE_BATTERY = "Scheduled Charge Battery"
+SCHEDULED_CHARGE_BATTERY_LEVEL = "Scheduled Charge Battery Level"
+SCHEDULED_CHARGE_POWER = "Scheduled Charge Power"
+
+SCHEDULED_CHARGE_BATTERY_OPTIONS = {
+    "Battery 1": [1, 0],
+    "Battery 2": [0, 1],
+    "Both": [1, 1],
+}
+POWER_GRID_VOLTAGE = "Power Grid Voltage"
+POWER_GRID_FREQUENCY = "Power Grid Frequency"
+
+BATTERY_N_CHARGE = "Battery %i Charge"
+BATTERY_N_LEVEL = "Battery %i Level"
+BATTERY_N_CHARGE_REMAINING_TIME = "Battery %i Charge Remaining Time"
+BATTERY_N_DISCHARGE_REMAINING_TIME = "Battery %i Discharge Remaining Time"
+BATTERY_N_TEMP = "Battery %i Temperature"
+BATTERY_N_IN_POWER = "Battery %i Input Power"
+BATTERY_N_OUT_POWER = "Battery %i Output Power"
+BATTERY_N_CURRENT = "Battery %i Current"
+CIRCUIT_N_CURRENT = "Circuit %i Current"
 
 #Smart Home Panel 2
 
 STORM_GUARD = "Storm Guard"
 IN_STORM_MODE = "In Storm Mode"
-POWER_GRID_VOLTAGE = "Power Grid Voltage"
 BATTERY = "Battery"
-
 BATTERY_N_POWER = "Battery %i Power"
-BATTERY_N_LEVEL = "Battery %i Level"
 BATTERY_N_FORCE_CHARGE = "Battery %i Force Charge"
 
 RELAY_N_OPERATION_COUNT = "Relay %i Operation Count"
@@ -438,3 +458,41 @@ SMART_BACKUP_MODE_OPTIONS = {
     "Self-powered" : 2,
     "Scheduled tasks": 3
 }
+
+# Alternator 800W
+ALTERNATOR_OPERATION_MODE_OPTIONS = {
+    "Charge": 1,
+    "Battery Maintenance": 2,
+    "Reverse Charge": 3,
+}
+
+ALTERNATOR_IN_POWER = "Alternator In Power"
+ALTERNATOR_STATION_POWER = "Station Power"
+ALTERNATOR_RATED_POWER = "Alternator Rated Power"
+ALTERNATOR_BAT_SOC = "Station Battery Charge"
+ALTERNATOR_CAR_BAT_VOLT = "Car Battery Voltage"
+ALTERNATOR_TEMP = "Alternator Temperature"
+ALTERNATOR_WIFI_RSSI = "WiFi Signal Strength"
+ALTERNATOR_CHARGE_REMAINING = "Charge Remaining Time"
+ALTERNATOR_DISCHARGE_REMAINING = "Discharge Remaining Time"
+ALTERNATOR_START_VOLTAGE = "Car Battery Start Voltage"
+ALTERNATOR_POWER_LIMIT = "Charging Power Limit"
+ALTERNATOR_CHARGE_CURRENT_LIMIT = "Charge Current Limit"
+ALTERNATOR_REVERSE_CHARGE_CURRENT_LIMIT = "Reverse Charge Current Limit"
+ALTERNATOR_CHARGE_CURRENT_MAX = "Charge Current Max"
+ALTERNATOR_REVERSE_CHARGE_CURRENT_MAX = "Reverse Charge Current Max"
+ALTERNATOR_OPERATION_MODE = "Operation Mode"
+ALTERNATOR_ENABLED = "Charging Enabled"
+ALTERNATOR_CABLE_LENGTH = "Extension Cable Length"
+
+# Wave 3
+SELF_CONSUMPTION_POWER = "Self Consumption Power"
+WATER_LEVEL = "Water Level"
+POWER_OFF_DELAY_REMAINING_TIME = "Power Off Delay Remaining"
+AMBIENT_TEMPERATURE = "Ambient Temperature"
+INDOOR_SUPPLY_AIR_TEMP = "Indoor Supply Air Temp"
+CONDENSER_TEMP = "Condenser Temp"
+EVAPORATOR_TEMP = "Evaporator Temp"
+SCREEN_BRIGHTNESS = "Screen Brightness"
+AUTO_DRAINAGE = "Auto Drain"
+AUTO_OFF_TIMEOUT = "Auto-Off Timeout"

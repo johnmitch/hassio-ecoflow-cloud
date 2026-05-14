@@ -1,19 +1,34 @@
+[tools]
+python = "3.13"
+uv = "latest"
+
 [env]
 _.python.venv = { path = ".venv", create = true }
 
-[tools]
-python = "3.13"
+[hooks]
+postinstall = "uv sync"
 
+[tasks.sync]
+description = "Install/sync Python dependencies with uv"
+run = "uv sync"
 
 [tasks.lint]
 description = "Lint code"
+depends = ["sync"]
 dir = "custom_components"
 run = """
-# pyright .
-ruff check .
+uv run ruff check .
+uv run mypy .
 """
 
 [tasks.protoc]
 tools.protoc = "32.0"
 dir = "custom_components/ecoflow_cloud/devices/internal/proto"
 run = "protoc --proto_path=. --python_out=. --pyi_out=.  *.proto"
+
+[tasks.gendocs]
+description = "Generate documentation"
+depends = ["sync"]
+dir = "docs"
+env = { PYTHONPATH = ".." }
+run = "uv run python gen.py"

@@ -1,17 +1,18 @@
-from custom_components.ecoflow_cloud.api.private_api import PrivateAPIMessageProtocol
+from custom_components.ecoflow_cloud.binary_sensor import MiscBinarySensorEntity
 import asyncio
 import json
 import logging
 import os
+import re
 from typing import Any, List
 from unittest.mock import Mock
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.frame import async_setup as frame_setup
 
+from custom_components.ecoflow_cloud.api.message import PrivateAPIMessageProtocol
 from custom_components.ecoflow_cloud.device_data import DeviceData, DeviceOptions
 from custom_components.ecoflow_cloud.devices import BaseDevice, EcoflowDeviceInfo
-
 from custom_components.ecoflow_cloud.devices.registry import (
     device_by_product,
     device_support_sub_devices,
@@ -34,6 +35,8 @@ logger = logging.getLogger(__name__)
 MARKER_VALUE = 6666
 OUTPUT_DIR = "devices"
 SUMMARY_FILENAME = "summary.md"
+README_FILENAME = "../README.md"
+README_MARKER = "## Current state"
 
 # Device test configuration constants
 DEVICE_SN = "SN"
@@ -77,7 +80,7 @@ MULTI_DEVICE_CONFIGURATIONS = {
 }
 
 # Initialize configurations
-device_options = DeviceOptions(0, 0, False)
+device_options = DeviceOptions(0, 0, False, False, 600)
 
 
 class MockSetup:
@@ -122,9 +125,7 @@ class DocumentationGenerator:
                     )
                     for module_type in MULTI_DEVICE_CONFIGURATIONS[device_type]
                 ]
-            raise NotImplementedError(
-                f"Multi-device type '{device_type}' requires configuration but none provided"
-            )
+            raise NotImplementedError(f"Multi-device type '{device_type}' requires configuration but none provided")
         else:
             return [
                 DeviceData(
@@ -137,9 +138,7 @@ class DocumentationGenerator:
                 )
             ]
 
-    def get_devices(
-        self, hass: HomeAssistant, device_type: str, dev: type[BaseDevice]
-    ) -> List[BaseDevice]:
+    def get_devices(self, hass: HomeAssistant, device_type: str, dev: type[BaseDevice]) -> List[BaseDevice]:
         real_devices = []
         device_info = create_test_device_info()
         for device_data in self.get_device_data(device_type):
@@ -154,6 +153,7 @@ class DocumentationGenerator:
             return "No devices available"
 
         total_sensors = 0
+        total_binary_sensors = 0
         total_switches = 0
         total_numbers = 0
         total_selects = 0
@@ -161,14 +161,28 @@ class DocumentationGenerator:
             client = Mock()
             client.device = device
             total_sensors += len(device.sensors(client))
+            total_binary_sensors += len(device.binary_sensors(client))
             total_switches += len(device.switches(client))
             total_numbers += len(device.numbers(client))
             total_selects += len(device.selects(client))
-        return f"sensors: {total_sensors}, switches: {total_switches}, sliders: {total_numbers}, selects: {total_selects}"
 
-    def render_brief_summary(self, hass: HomeAssistant):
-        """Generate brief summary documentation."""
-        content_summary = "## Current state\n"
+        parts = []
+        if total_sensors > 0:
+            parts.append(f"sensors: {total_sensors}")
+        if total_binary_sensors > 0:
+            parts.append(f"binary_sensors: {total_binary_sensors}")
+        if total_switches > 0:
+            parts.append(f"switches: {total_switches}")
+        if total_numbers > 0:
+            parts.append(f"sliders: {total_numbers}")
+        if total_selects > 0:
+            parts.append(f"selects: {total_selects}")
+
+        return ", ".join(parts)
+
+    def render_brief_summary(self, hass: HomeAssistant) -> str:
+        """Generate brief summary documentation and write it to summary.md."""
+        content_summary = f"{README_MARKER}\n"
         content_summary += "### Devices available with private_api\n"
 
         for dt, dev in devices.items():
@@ -197,12 +211,9 @@ class DocumentationGenerator:
                     if len(real_devices) > 1:
                         content = content + f"\n### {device.device_data.device_type}\n"
                     content = content + render_device_summary(device, True)
-                content_summary += (
-                    "<details><summary> %s (API) <i>(%s)</i> </summary>"
-                    % (
-                        dt,
-                        self.device_summary(real_devices),
-                    )
+                content_summary += "<details><summary> %s (API) <i>(%s)</i> </summary>" % (
+                    dt,
+                    self.device_summary(real_devices),
                 )
 
                 content_summary += "\n<p>\n"
@@ -215,6 +226,30 @@ class DocumentationGenerator:
         with open(SUMMARY_FILENAME, "w+", encoding="utf-8") as f_summary:
             f_summary.write(content_summary)
             f_summary.write("\n")
+
+        return content_summary
+
+    def update_readme(self, summary_content: str) -> None:
+        """Replace the '## Current state' section of the README with the generated summary.
+
+        Matches from the marker up to the next top-level '## ' heading or EOF,
+        so sections added below 'Current state' in the future are preserved.
+        """
+        with open(README_FILENAME, "r", encoding="utf-8") as f:
+            readme = f.read()
+
+        pattern = re.compile(
+            rf"^{re.escape(README_MARKER)}\n.*?(?=^## |\Z)",
+            re.DOTALL | re.MULTILINE,
+        )
+        if not pattern.search(readme):
+            raise ValueError(f"Marker '{README_MARKER}' not found in {README_FILENAME}")
+
+        new_readme = pattern.sub(summary_content.rstrip() + "\n\n", readme)
+        with open(README_FILENAME, "w", encoding="utf-8") as f:
+            f.write(new_readme)
+
+        logger.info("Updated '%s' section in %s", README_MARKER, README_FILENAME)
 
     def update_full_summary(self, hass: HomeAssistant):
         """Generate full device documentation."""
@@ -278,9 +313,7 @@ class MarkdownRenderer:
             elif isinstance(command_dict, PrivateAPIMessageProtocol):
                 json_dict = command_dict.to_dict()
             else:
-                raise TypeError(
-                    "Unsupported command_dict type: %s" % type(command_dict).__name__
-                )
+                raise TypeError("Unsupported command_dict type: %s" % type(command_dict).__name__)
 
             # Check if params exist and update marker values
             if "params" in json_dict:
@@ -322,10 +355,33 @@ class MarkdownRenderer:
 
         return res
 
+    def render_binary_sensor(self, sw: MiscBinarySensorEntity, brief: bool = False) -> str:
+        """Render sensor entity to markdown."""
+        if not isinstance(sw, EcoFlowDictEntity):
+            res = "- %s" % sw.name
+        elif brief:
+            if sw.enabled_default:
+                res = "- %s" % sw.name
+            else:
+                if sw.auto_enable:
+                    res = "- %s  _(auto)_" % sw.name
+                else:
+                    res = "- %s  _(disabled)_" % sw.name
+        else:
+            if sw.enabled_default:
+                res = "- %s (`%s`)" % (sw.name, sw.mqtt_key)
+            else:
+                if sw.auto_enable:
+                    res = "- %s (`%s`)   _(auto)_" % (sw.name, sw.mqtt_key)
+                else:
+                    res = "- %s (`%s`)   _(disabled)_" % (sw.name, sw.mqtt_key)
+
+        return res
+
     def render_switch(self, sw: BaseSwitchEntity, brief: bool = False) -> str:
         """Render switch entity to markdown."""
         if brief:
-            return "- %s %s" % (sw.name, self.command_ro(sw))
+            return "- %s%s" % (sw.name, self.command_ro(sw))
         else:
             return "- %s (`%s` -> `%s`)" % (
                 sw.name,
@@ -336,7 +392,7 @@ class MarkdownRenderer:
     def render_number(self, sw: BaseNumberEntity, brief: bool = False) -> str:
         """Render number entity to markdown."""
         if brief:
-            return "- %s %s" % (sw.name, self.command_ro(sw))
+            return "- %s%s" % (sw.name, self.command_ro(sw))
         else:
             return "- %s (`%s` -> `%s` [%d - %d])" % (
                 sw.name,
@@ -349,7 +405,7 @@ class MarkdownRenderer:
     def render_select(self, sw: BaseSelectEntity, brief: bool = False) -> str:
         """Render select entity to markdown."""
         if brief:
-            return "- %s %s" % (sw.name, self.command_ro(sw))
+            return "- %s%s" % (sw.name, self.command_ro(sw))
         else:
             return "- %s (`%s` -> `%s` [%s])" % (
                 sw.name,
@@ -364,21 +420,35 @@ class MarkdownRenderer:
         client.device = device
         res = ""
 
-        res += "\n*Sensors*\n"
-        for sw in device.sensors(client):
-            res += self.render_sensor(sw, brief) + "\n"
+        sensors = device.sensors(client)
+        if len(sensors) > 0:
+            res += "\n*Sensors*\n"
+            for sw in sensors:
+                res += self.render_sensor(sw, brief) + "\n"
 
-        res += "\n*Switches*\n"
-        for sw in device.switches(client):
-            res += self.render_switch(sw, brief) + "\n"
+        binary_sensors = device.binary_sensors(client)
+        if len(binary_sensors) > 0:
+            res += "\n*Binary sensors*\n"
+            for sw in binary_sensors:
+                res += self.render_binary_sensor(sw, brief) + "\n"
 
-        res += "\n*Sliders (numbers)*\n"
-        for sw in device.numbers(client):
-            res += self.render_number(sw, brief) + "\n"
+        switches = device.switches(client)
+        if len(switches) > 0:
+            res += "\n*Switches*\n"
+            for sw in switches:
+                res += self.render_switch(sw, brief) + "\n"
 
-        res += "\n*Selects*\n"
-        for sw in device.selects(client):
-            res += self.render_select(sw, brief) + "\n"
+        numbers = device.numbers(client)
+        if len(numbers) > 0:
+            res += "\n*Sliders (numbers)*\n"
+            for sw in numbers:
+                res += self.render_number(sw, brief) + "\n"
+
+        selects = device.selects(client)
+        if len(selects) > 0:
+            res += "\n*Selects*\n"
+            for sw in selects:
+                res += self.render_select(sw, brief) + "\n"
 
         return res
 
@@ -401,7 +471,8 @@ if __name__ == "__main__":
         generator = DocumentationGenerator()
 
         generator.update_full_summary(hass)
-        generator.render_brief_summary(hass)
+        summary_content = generator.render_brief_summary(hass)
+        generator.update_readme(summary_content)
 
         print("Generate docs finished !")
 

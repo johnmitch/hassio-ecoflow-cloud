@@ -29,49 +29,112 @@ from custom_components.ecoflow_cloud.switch import EnabledEntity
 class DeltaProUltra(BaseDevice):
     def sensors(self, client: EcoflowApiClient) -> list[SensorEntity]:
         return [
-            # ── Main battery level ──────────────────────────────────────────────
-            LevelSensorEntity(client, self, "hs_yj751_pd_appshow_addr.soc", const.MAIN_BATTERY_LEVEL)
-            .attr("hs_yj751_bms_slave_addr.1.remainCap", const.ATTR_REMAIN_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.1.fullCap", const.ATTR_FULL_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.1.designCap", const.ATTR_DESIGN_CAPACITY, 0),
-
-            # ── Total power (in / out) ──────────────────────────────────────────
-            WattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.wattsInSum", const.TOTAL_IN_POWER),
-            WattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.wattsOutSum", const.TOTAL_OUT_POWER),
-
-            # ── Discharge remaining time ────────────────────────────────────────
-            RemainSensorEntity(client, self, "hs_yj751_pd_appshow_addr.remainTime",
-                               const.DISCHARGE_REMAINING_TIME),
-
-            # ── AC ports ────────────────────────────────────────────────────────
-            # 5.8 kW AC input port
-            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inAc5p8Pwr", const.AC_IN_POWER),
-            # AC output – total and per-leg
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcTtPwr", const.AC_OUT_POWER),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL11Pwr", "AC Out L1-1 Power"),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL12Pwr", "AC Out L1-2 Power"),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL21Pwr", "AC Out L2-1 Power"),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL22Pwr", "AC Out L2-2 Power"),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAc5p8Pwr", "5.8kW Port Out Power"),
-
-            # ── Solar (MPPT) ────────────────────────────────────────────────────
-            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inHvMpptPwr", "Solar HV In Power"),
-            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inLvMpptPwr", "Solar LV In Power"),
-
-            # ── USB / Type-C ────────────────────────────────────────────────────
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outTypec1Pwr",
-                                 const.TYPEC_1_OUT_POWER),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outTypec2Pwr",
-                                 const.TYPEC_2_OUT_POWER),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outUsb1Pwr", const.USB_1_OUT_POWER),
-            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outUsb2Pwr", const.USB_2_OUT_POWER),
-
-            # ── BMS backend ────────────────────────────────────────────────────
-            WattsSensorEntity(client, self, "hs_yj751_pd_backend_addr.bmsOutputWatts", "BMS Output Power"),
-            WattsSensorEntity(client, self, "hs_yj751_pd_backend_addr.bmsInputWatts", "BMS Input Power"),
-            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.batVol", const.BATTERY_VOLT, False),
-
-            # ── Temperatures ────────────────────────────────────────────────────
+            QuotaScheduledStatusSensorEntity(client, self, 300),  # required to call quota/all every 5 minutes
+            RemainSensorEntity(client, self, "hs_yj751_pd_appshow_addr.remainTime", const.REMAINING_TIME),
+            LevelSensorEntity(client, self, "hs_yj751_pd_appshow_addr.soc", const.BATTERY_LEVEL_SOC),
+            MiscSensorEntity(client, self, "hs_yj751_pd_appshow_addr.bpNum", const.BATTERY_COUNT),
+            MiscSensorEntity(client, self, "hs_yj751_pd_appshow_addr.fullCombo", const.WIRELESS_4G_DATA_MAX, False),
+            MiscSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.remainCombo", const.WIRELESS_4G_DATA_REMAINING, False
+            ),
+            MiscSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.wireless4gCon", const.WIRELESS_4G_REGISTERED, False
+            ),
+            MiscSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.wirlesss4gErrCode", const.WIRELESS_4G_ERROR_CODE, False
+            ),
+            MiscSensorEntity(client, self, "hs_yj751_pd_appshow_addr.simIccid", const.WIRELESS_4G_SIM_ID, False),
+            MiscSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.wireless4GSta", const.INTERNET_CONNECTION_TYPE, False
+            ),
+            MiscSensorEntity(client, self, "hs_yj751_pd_appshow_addr.sysErrCode", const.ERROR_CODE),
+            InWattsSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.wattsInSum", const.TOTAL_IN_POWER
+            ).with_energy(),
+            OutWattsSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.wattsOutSum", const.TOTAL_OUT_POWER
+            ).with_energy(),
+            InWattsSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.inAc5p8Pwr", const.PIO_PORT_IN_POWER
+            ).with_energy(),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.inAc5p8Amp", const.PIO_PORT_IN_CURRENT, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.inAc5p8Vol", const.PIO_PORT_IN_VOLTAGE, False),
+            OutWattsSensorEntity(
+                client, self, "hs_yj751_pd_appshow_addr.outAc5p8Pwr", const.PIO_PORT_OUT_POWER
+            ).with_energy(),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAc5p8Amp", const.PIO_PORT_OUT_CURRENT, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAc5p8Vol", const.PIO_PORT_OUT_VOLTAGE, False),
+            MiscSensorEntity(client, self, "hs_yj751_pd_appshow_addr.access5p8InType", const.PIO_PORT_INPUT_TYPE),
+            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inAcC20Pwr", const.AC_IN_POWER).with_energy(
+                False
+            ),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.inAcC20Amp", const.AC_IN_CURRENT, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.inAcC20Vol", const.AC_IN_VOLT, False),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outUsb1Pwr", const.USB_1_OUT_POWER)
+            .with_energy(False)
+            .with_icon("mdi:usb-port"),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outUsb2Pwr", const.USB_2_OUT_POWER)
+            .with_energy(False)
+            .with_icon("mdi:usb-port"),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outTypec1Pwr", const.TYPEC_1_OUT_POWER)
+            .with_energy(False)
+            .with_icon("mdi:usb-c-port"),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outTypec2Pwr", const.TYPEC_2_OUT_POWER)
+            .with_energy(False)
+            .with_icon("mdi:usb-c-port"),
+            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inHvMpptPwr", const.SOLAR_1_IN_POWER)
+            .with_energy()
+            .with_icon("mdi:solar-power"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.inHvMpptAmp", const.SOLAR_1_IN_AMPS, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.inHvMpptVol", const.SOLAR_1_IN_VOLTS, False),
+            InWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.inLvMpptPwr", const.SOLAR_2_IN_POWER)
+            .with_energy()
+            .with_icon("mdi:solar-power"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.inLvMpptAmp", const.SOLAR_2_IN_AMPS, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.inLvMpptVol", const.SOLAR_2_IN_VOLTS, False),
+            # 20A 120V Backup UPS
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL11Pwr", const.AC_N_OUT_POWER % 1)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-us"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL11Amp", const.AC_N_OUT_CURRENT % 1, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL11Vol", const.AC_N_OUT_VOLTAGE % 1, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL11Pf", const.AC_N_OUT_FREQ % 1, False),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL12Pwr", const.AC_N_OUT_POWER % 2)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-us"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL12Amp", const.AC_N_OUT_CURRENT % 2, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL12Vol", const.AC_N_OUT_VOLTAGE % 2, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL12Pf", const.AC_N_OUT_FREQ % 2, False),
+            # 20A 120V Online UPS
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL21Pwr", const.AC_N_OUT_POWER % 3)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-us"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL21Amp", const.AC_N_OUT_CURRENT % 3, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL21Vol", const.AC_N_OUT_VOLTAGE % 3, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL21Pf", const.AC_N_OUT_FREQ % 3, False),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL22Pwr", const.AC_N_OUT_POWER % 4)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-us"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL22Amp", const.AC_N_OUT_CURRENT % 4, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL22Vol", const.AC_N_OUT_VOLTAGE % 4, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL22Pf", const.AC_N_OUT_FREQ % 4, False),
+            # 30A 120V
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcL14Pwr", const.AC_N_OUT_POWER % 5)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-au"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL14Amp", const.AC_N_OUT_CURRENT % 5, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL14Vol", const.AC_N_OUT_VOLTAGE % 5, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcL14Pf", const.AC_N_OUT_FREQ % 5, False),
+            # 30A 120/240V
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAcTtPwr", const.AC_N_OUT_POWER % 6)
+            .with_energy(False)
+            .with_icon("mdi:power-socket-de"),
+            AmpSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcTtAmp", const.AC_N_OUT_CURRENT % 6, False),
+            VoltSensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcTtVol", const.AC_N_OUT_VOLTAGE % 6, False),
+            FrequencySensorEntity(client, self, "hs_yj751_pd_backend_addr.outAcTtPf", const.AC_N_OUT_FREQ % 6, False),
+            OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAdsPwr", const.DC_ANDERSON_OUT_POWER)
+            .with_energy(False)
+            .with_icon("mdi:connection"),
             TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pcsAcTemp", "PCS Temperature"),
             TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pdTemp", "PD Temperature"),
 
@@ -93,27 +156,6 @@ class DeltaProUltra(BaseDevice):
                                const.SLAVE_N_CYCLES % 1, False),
             AmpSensorEntity(client, self, "hs_yj751_bms_slave_addr.1.amp",
                             const.SLAVE_N_BATTERY_CURRENT % 1, False),
-
-            # ── Battery Pack 2 (hs_yj751_bms_slave_addr.2.*) ───────────────────
-            LevelSensorEntity(client, self, "hs_yj751_bms_slave_addr.2.soc",
-                              const.SLAVE_N_BATTERY_LEVEL % 2, False, True)
-            .attr("hs_yj751_bms_slave_addr.2.remainCap", const.ATTR_REMAIN_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.2.fullCap", const.ATTR_FULL_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.2.designCap", const.ATTR_DESIGN_CAPACITY, 0),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.2.remainCap",
-                                 const.SLAVE_N_REMAIN_CAPACITY % 2, False),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.2.fullCap",
-                                 const.SLAVE_N_FULL_CAPACITY % 2, False),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.2.designCap",
-                                 const.SLAVE_N_DESIGN_CAPACITY % 2, False),
-            TempSensorEntity(client, self, "hs_yj751_bms_slave_addr.2.temp",
-                             const.SLAVE_N_BATTERY_TEMP % 2, False, True),
-            CyclesSensorEntity(client, self, "hs_yj751_bms_slave_addr.2.cycles",
-                               const.SLAVE_N_CYCLES % 2, False),
-            AmpSensorEntity(client, self, "hs_yj751_bms_slave_addr.2.amp",
-                            const.SLAVE_N_BATTERY_CURRENT % 2, False),
-
-            QuotaStatusSensorEntity(client, self),
         ]
 
 

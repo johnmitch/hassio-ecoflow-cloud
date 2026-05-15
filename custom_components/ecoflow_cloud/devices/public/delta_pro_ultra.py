@@ -22,6 +22,7 @@ from custom_components.ecoflow_cloud.sensor import (
     QuotaScheduledStatusSensorEntity,
     RemainSensorEntity,
     VoltSensorEntity,
+    TempSensorClient
 )
 from custom_components.ecoflow_cloud.switch import EnabledEntity
 
@@ -135,6 +136,9 @@ class DeltaProUltra(BaseDevice):
             OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAdsPwr", const.DC_ANDERSON_OUT_POWER)
             .with_energy(False)
             .with_icon("mdi:connection"),
+            # ── Temperatures ────────────────────────────────────────────────────
+            TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pcsAcTemp", "PCS Temperature"),
+            TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pdTemp", "PD Temperature"),
         ]
 
 

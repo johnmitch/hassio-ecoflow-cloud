@@ -135,27 +135,6 @@ class DeltaProUltra(BaseDevice):
             OutWattsSensorEntity(client, self, "hs_yj751_pd_appshow_addr.outAdsPwr", const.DC_ANDERSON_OUT_POWER)
             .with_energy(False)
             .with_icon("mdi:connection"),
-            TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pcsAcTemp", "PCS Temperature"),
-            TempSensorEntity(client, self, "hs_yj751_pd_backend_addr.pdTemp", "PD Temperature"),
-
-            # ── Battery Pack 1 (hs_yj751_bms_slave_addr.1.*) ───────────────────
-            LevelSensorEntity(client, self, "hs_yj751_bms_slave_addr.1.soc",
-                              const.SLAVE_N_BATTERY_LEVEL % 1, False, True)
-            .attr("hs_yj751_bms_slave_addr.1.remainCap", const.ATTR_REMAIN_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.1.fullCap", const.ATTR_FULL_CAPACITY, 0)
-            .attr("hs_yj751_bms_slave_addr.1.designCap", const.ATTR_DESIGN_CAPACITY, 0),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.1.remainCap",
-                                 const.SLAVE_N_REMAIN_CAPACITY % 1, False),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.1.fullCap",
-                                 const.SLAVE_N_FULL_CAPACITY % 1, False),
-            CapacitySensorEntity(client, self, "hs_yj751_bms_slave_addr.1.designCap",
-                                 const.SLAVE_N_DESIGN_CAPACITY % 1, False),
-            TempSensorEntity(client, self, "hs_yj751_bms_slave_addr.1.temp",
-                             const.SLAVE_N_BATTERY_TEMP % 1, False, True),
-            CyclesSensorEntity(client, self, "hs_yj751_bms_slave_addr.1.cycles",
-                               const.SLAVE_N_CYCLES % 1, False),
-            AmpSensorEntity(client, self, "hs_yj751_bms_slave_addr.1.amp",
-                            const.SLAVE_N_BATTERY_CURRENT % 1, False),
         ]
 
 

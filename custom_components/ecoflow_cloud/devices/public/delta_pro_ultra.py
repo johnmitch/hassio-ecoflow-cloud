@@ -22,7 +22,7 @@ from custom_components.ecoflow_cloud.sensor import (
     QuotaScheduledStatusSensorEntity,
     RemainSensorEntity,
     VoltSensorEntity,
-    TempSensorClient,
+    TempSensorEntity,
     CyclesSensorEntity,
     CapacitySensorEntity
 )
